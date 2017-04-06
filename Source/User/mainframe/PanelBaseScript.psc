@@ -1,1 +1,0 @@
-Scriptname mainframe:PanelBaseScript extends mainframe:BaseScript
