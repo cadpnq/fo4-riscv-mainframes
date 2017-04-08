@@ -26,41 +26,42 @@ int Function Read(int address)
 	int BlockNumber = Math.floor(address / 128)
 	int BlockAddress = address % 128
 	If(BlockNumber == 0)
-		Return Block0[address]
+		Return Block0[BlockAddress]
 	ElseIf (BlockNumber == 1)
-		Return Block1[address]
+		Return Block1[BlockAddress]
 	ElseIf (BlockNumber == 2)
-		Return Block2[address]
+		Return Block2[BlockAddress]
 	ElseIf (BlockNumber == 3)
-		Return Block3[address]
+		Return Block3[BlockAddress]
 	ElseIf (BlockNumber == 4)
-		Return Block4[address]
+		Return Block4[BlockAddress]
 	ElseIf (BlockNumber == 5)
-		Return Block5[address]
+		Return Block5[BlockAddress]
 	ElseIf (BlockNumber == 6)
-		Return Block6[address]
+		Return Block6[BlockAddress]
 	ElseIf (BlockNumber == 7)
-		Return Block7[address]
+		Return Block7[BlockAddress]
 	EndIf
 EndFunction
 
 Function Write(int address, int value)
 	int BlockNumber = Math.floor(address / 128)
+	int BlockAddress = address % 128
 	If(BlockNumber == 0)
-		Block0[address] = value
+		Block0[BlockAddress] = value
 	ElseIf (BlockNumber == 1)
-		Block1[address] = value
+		Block1[BlockAddress] = value
 	ElseIf (BlockNumber == 2)
-		Block2[address] = value
+		Block2[BlockAddress] = value
 	ElseIf (BlockNumber == 3)
-		Block3[address] = value
+		Block3[BlockAddress] = value
 	ElseIf (BlockNumber == 4)
-		Block4[address] = value
+		Block4[BlockAddress] = value
 	ElseIf (BlockNumber == 5)
-		Block5[address] = value
+		Block5[BlockAddress] = value
 	ElseIf (BlockNumber == 6)
-		Block6[address] = value
+		Block6[BlockAddress] = value
 	ElseIf (BlockNumber == 7)
-		Block7[address] = value
+		Block7[BlockAddress] = value
 	EndIf
 EndFunction

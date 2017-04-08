@@ -10,7 +10,7 @@ int Function Read(int address)
 		EndIf
 	Else
 		int PanelNumber = Math.floor(address / 1024)
-		String PanelName = "Panel" + PanelNumber
+		String PanelName = "Slot" + PanelNumber
 		PanelBaseScript Panel = ISPSelf.GetObject(PanelName) as PanelBaseScript
 		If(Panel)
 			Return Panel.Read(address - (1024 * PanelNumber))
@@ -29,7 +29,8 @@ Function Write(int address, int value)
 		EndIf
 	Else
 		int PanelNumber = Math.floor(address / 1024)
-		String PanelName = "Panel" + PanelNumber
+		String PanelName = "Slot" + PanelNumber
+		Debug.MessageBox(PanelName)
 		PanelBaseScript Panel = ISPSelf.GetObject(PanelName) as PanelBaseScript
 		If(Panel)
 			Panel.Write(address - (1024 * PanelNumber), value)
