@@ -30,7 +30,6 @@ Function Write(int address, int value)
 	Else
 		int PanelNumber = Math.floor(address / 1024)
 		String PanelName = "Slot" + PanelNumber
-		Debug.MessageBox(PanelName)
 		PanelBaseScript Panel = ISPSelf.GetObject(PanelName) as PanelBaseScript
 		If(Panel)
 			Panel.Write(address - (1024 * PanelNumber), value)

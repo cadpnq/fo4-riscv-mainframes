@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <script type="text/javascript" src="assembler.js"></script>
+        <script type="text/javascript">
+            function assemble() {
+				let bytes = assemble_string_to_bytes(document.getElementById('in').value);
+				
+				console.log(bytes);
+				
+				let batch = '';
+				for(let i in bytes) {
+					if(bytes[i]) {
+						batch += `cf "write" ${i} ${bytes[i]}\n`;
+					}
+				}
+				
+				document.getElementById('out').value = batch;
+			}
+        </script>
+    </head>
+    <body>
+        <textarea id="in" type="text" style="height:45%;width:100%"></textarea><br>
+        <input id="options" type="button" value="assemble" onclick="assemble()"/><br>
+        <textarea id="out" type="text" style="height:45%;width:100%"></textarea>
+    </body>
+</html>
