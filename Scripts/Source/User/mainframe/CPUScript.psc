@@ -144,10 +144,13 @@ Function Cycle()
 		f3 = funct3()
 ; instruction LB
 		If (f3 == LB)
+			SetRegister(rd(), Read(rs1() + i_immediate()))
 ; instruction LH
 		ElseIf (f3 == LH)
+			SetRegister(rd(), ReadHalfword(rs1() + i_immediate()))
 ; instruction LW
 		ElseIf (f3 == LW)
+			SetRegister(rd(), ReadWord(rs1() + i_immediate()))
 ; instruction LBU
 		ElseIf (f3 == LBU)
 ; instruction LHU
@@ -157,25 +160,32 @@ Function Cycle()
 		f3 = funct3()
 ; instruction SB
 		If (f3 == SB)
+			Write(rs1() + s_immediate(), rs2())
 ; instruction SH
 		ElseIf (f3 == SH)
+			WriteHalfword(rs1() + s_immediate(), rs2())
 ; instruction SW
 		ElseIf (f3 == SW)
+			WriteWord(rs1() + s_immediate(), rs2())
 		EndIf
 	ElseIf (op == OPGROUP7)
 		f3 = funct3()
 ; instruction ADDI
 		If (f3 == ADDI)
+			SetRegister(rd(), rs1() + i_immediate())
 ; instruction SLTI
 		ElseIf (f3 == SLTI)
 ; instruction SLTIU
 		ElseIf (f3 == SLTIU)
 ; instruction XORI
 		ElseIf (f3 == XORI)
+			SetRegister(rd(), Binlib.BitwiseXOR(rs1(), i_immediate()))
 ; instruction ORI
 		ElseIf (f3 == ORI)
+			SetRegister(rd(), Binlib.BitwiseOR(rs1(), i_immediate()))
 ; instruction ANDI
 		ElseIf (f3 == ANDI)
+			SetRegister(rd(), Binlib.BitwiseAND(rs1(), i_immediate()))
 ; instruction SLLI
 		ElseIf (f3 == SLLI)
 		ElseIf (f3 == SRLI_SRAI)
@@ -191,17 +201,25 @@ Function Cycle()
 		ElseIf (f3 == SLL)
 ; instruction SLT
 		ElseIf (f3 == SLT)
+			If (rs1() < rs2())
+				SetRegister(rd(), 1)
+			Else
+				SetRegister(rd(), 0)
+			EndIf
 ; instruction SLTU
 		ElseIf (f3 == SLTU)
 ; instruction XOR
 		ElseIf (f3 == XOR)
+			SetRegister(rd(), Binlib.BitwiseXOR(rs1(), rs2()))
 		ElseIf (f3 == SRL_SRA)
 ; instruction SRL
 ; instruction SRA
 ; instruction OR
 		ElseIf (f3 == OR)
+			SetRegister(rd(), Binlib.BitwiseOR(rs1(), rs2()))
 ; instruction AND
 		ElseIf (f3 == AND)
+			SetRegister(rd(), Binlib.BitwiseAND(rs1(), rs2()))
 		EndIf
 	EndIf
 
@@ -219,13 +237,10 @@ Function SetRegister(int register, int value)
 EndFunction
 
 int Function Read(int address)
-	Debug.Trace("reading: " + address)
 	ExpansionRackScript NextRack = ISPSelf.GetObject("NextRack") as ExpansionRackScript
 	If(NextRack)
-		Debug.Trace("READ: " + NextRack.Read(address))
 		Return NextRack.Read(address)
 	Else
-		Debug.Trace("returning 0")
 		Return 0
 	EndIf
 EndFunction
