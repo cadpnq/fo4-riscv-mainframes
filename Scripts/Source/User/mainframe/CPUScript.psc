@@ -96,9 +96,10 @@ EndEvent
 Function Cycle()
 ; fetch instruction
 	InstructionRegister = ReadWord(ProgramCounter)
-	AInstructionRegister = Binlib.IntToArray(InstructionRegister)
+	AInstructionRegister = IntToArray(InstructionRegister)
 	
-	Debug.Trace(InstructionRegister)
+;	Debug.Trace("instruction is: " + InstructionRegister)
+;	Debug.Trace("opcode is: " + opcode())
 	int f3
 	int f7
 	int op = opcode()
@@ -116,7 +117,7 @@ Function Cycle()
 	ElseIf (op == OPGROUP3)
 ; instruction JALR
 		SetRegister(rd(), ProgramCounter + 4)
-		ProgramCounter = i_immediate() + rs1()
+		ProgramCounter = i_immediate() + Registers[rs1()]
 		Return
 	ElseIf (op == OPGROUP4)
 		f3 = funct3()
@@ -156,48 +157,50 @@ Function Cycle()
 		f3 = funct3()
 ; instruction LB
 		If (f3 == LB)
-			SetRegister(rd(), Read(rs1() + i_immediate()))
+			SetRegister(rd(), ExtendByte(Read(Registers[rs1()] + i_immediate())))
 ; instruction LH
 		ElseIf (f3 == LH)
-			SetRegister(rd(), ReadHalfword(rs1() + i_immediate()))
+			SetRegister(rd(), ExtendHalfword(ReadHalfword(Registers[rs1()] + i_immediate())))
 ; instruction LW
 		ElseIf (f3 == LW)
-			SetRegister(rd(), ReadWord(rs1() + i_immediate()))
+			SetRegister(rd(), ReadWord(Registers[rs1()] + i_immediate()))
 ; instruction LBU
 		ElseIf (f3 == LBU)
+			SetRegister(rd(), Read(Registers[rs1()] + i_immediate()))
 ; instruction LHU
 		ElseIf (f3 == LHU)
+			SetRegister(rd(), ReadHalfword(Registers[rs1()] + i_immediate()))
 		EndIf
 	ElseIf (op == OPGROUP6)
 		f3 = funct3()
 ; instruction SB
 		If (f3 == SB)
-			Write(rs1() + s_immediate(), rs2())
+			Write(Registers[rs1()] + s_immediate(), Registers[rs2()])
 ; instruction SH
 		ElseIf (f3 == SH)
-			WriteHalfword(rs1() + s_immediate(), rs2())
+			WriteHalfword(Registers[rs1()] + s_immediate(), Registers[rs2()])
 ; instruction SW
 		ElseIf (f3 == SW)
-			WriteWord(rs1() + s_immediate(), rs2())
+			WriteWord(Registers[rs1()] + s_immediate(), Registers[rs2()])
 		EndIf
 	ElseIf (op == OPGROUP7)
 		f3 = funct3()
 ; instruction ADDI
 		If (f3 == ADDI)
-			SetRegister(rd(), rs1() + i_immediate())
+			SetRegister(rd(), Registers[rs1()] + i_immediate())
 ; instruction SLTI
 		ElseIf (f3 == SLTI)
 ; instruction SLTIU
 		ElseIf (f3 == SLTIU)
 ; instruction XORI
 		ElseIf (f3 == XORI)
-			SetRegister(rd(), Binlib.BitwiseXOR(rs1(), i_immediate()))
+			SetRegister(rd(), BitwiseXOR(Registers[rs1()], i_immediate()))
 ; instruction ORI
 		ElseIf (f3 == ORI)
-			SetRegister(rd(), Binlib.BitwiseOR(rs1(), i_immediate()))
+			SetRegister(rd(), BitwiseOR(Registers[rs1()], i_immediate()))
 ; instruction ANDI
 		ElseIf (f3 == ANDI)
-			SetRegister(rd(), Binlib.BitwiseAND(rs1(), i_immediate()))
+			SetRegister(rd(), BitwiseAND(Registers[rs1()], i_immediate()))
 ; instruction SLLI
 		ElseIf (f3 == SLLI)
 		ElseIf (f3 == SRLI_SRAI)
@@ -210,16 +213,16 @@ Function Cycle()
 			f7 = funct7()
 ; instruction ADD
 			If (f7 == ADD)
-				SetRegister(rd(), rs1() + rs2())
+				SetRegister(rd(), Registers[rs1()] + Registers[rs2()])
 ; instruction SUB
 			ElseIf (f7 == SUB)
-				SetRegister(rd(), rs1() - rs2())
+				SetRegister(rd(), Registers[rs1()] - Registers[rs2()])
 			EndIf
 ; instruction SLL
 		ElseIf (f3 == SLL)
 ; instruction SLT
 		ElseIf (f3 == SLT)
-			If (rs1() < rs2())
+			If (Registers[rs1()] < Registers[rs2()])
 				SetRegister(rd(), 1)
 			Else
 				SetRegister(rd(), 0)
@@ -228,16 +231,16 @@ Function Cycle()
 		ElseIf (f3 == SLTU)
 ; instruction XOR
 		ElseIf (f3 == XOR)
-			SetRegister(rd(), Binlib.BitwiseXOR(rs1(), rs2()))
+			SetRegister(rd(), BitwiseXOR(Registers[rs1()], Registers[rs2()]))
 		ElseIf (f3 == SRL_SRA)
 ; instruction SRL
 ; instruction SRA
 ; instruction OR
 		ElseIf (f3 == OR)
-			SetRegister(rd(), Binlib.BitwiseOR(rs1(), rs2()))
+			SetRegister(rd(), BitwiseOR(Registers[rs1()], Registers[rs2()]))
 ; instruction AND
 		ElseIf (f3 == AND)
-			SetRegister(rd(), Binlib.BitwiseAND(rs1(), rs2()))
+			SetRegister(rd(), BitwiseAND(Registers[rs1()], Registers[rs2()]))
 		EndIf
 	EndIf
 
@@ -271,17 +274,37 @@ Function Write(int address, int value)
 EndFunction
 
 int Function ReadHalfword(int address)
-	Return Binlib.BitwiseOR(Read(address), Binlib.LeftShift(Read(address + 1), 8))
+	Return BitwiseOR(Read(address), LeftShift(Read(address + 1), 8))
 EndFunction
 
 Function WriteHalfword(int address, int value)
+	Write(address, BitwiseAND(value, 255))
+	Write(address + 1, BitwiseAND(RightShift(value, 255), 8))
 EndFunction
 
 int Function ReadWord(int address)
-	Return Binlib.BitwiseOR(ReadHalfword(address), Binlib.LeftShift(ReadHalfword(address + 2), 16))
+	Return BitwiseOR(ReadHalfword(address), LeftShift(ReadHalfword(address + 2), 16))
 EndFunction
 
 Function WriteWord(int address, int value)
+	WriteHalfword(address, BitwiseAND(value, 65535))
+	WriteHalfword(address + 2, BitwiseAND(RightShift(value, 16), 65535))
+EndFunction
+
+int Function ExtendByte(int value)
+	If (GetBit(value, 7))
+		Return BitwiseOR(value, -256)
+	Else
+		Return value
+	EndIf
+EndFunction
+
+int Function ExtendHalfword(int value)
+	If (GetBit(value, 15))
+		Return BitwiseOR(value, -65536)
+	Else
+		Return Value
+	EndIf
 EndFunction
 
 ; Decoding functions
@@ -293,19 +316,21 @@ int Function decode(int[] mask)
 		If (mask[i] >= 0)
 			ret[i] = AInstructionRegister[mask[i]]
 		EndIf
+		
+		i += 1
 	EndWhile
 	
-	Return Binlib.ArrayToInt(ret)
+	Return ArrayToInt(ret)
 EndFunction
 
 int Function opcode()
 ; todo: test if doing it with AND and bitshifts is faster
-;	Return Binlib.BitwiseAND(InstructionRegister, 127)
+;	Return BitwiseAND(InstructionRegister, 127)
 	Return decode(OPCODE_MASK)
 EndFunction
 
 int Function rd()
-;	Return Binlib.RightShift(Binlib.BitwiseAND(InstructionRegister, 3968), 7)
+;	Return decodeRightShift(BitwiseAND(InstructionRegister, 3968), 7)
 	Return decode(RD_MASK)
 EndFunction
 
