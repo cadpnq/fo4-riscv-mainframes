@@ -3,80 +3,91 @@ import Binlib
 
 ; Note that I'm making a choice of simple over fast. Lots of optimizations are possible.
 
-;0110111
+int[] Property I_MASK Auto
+int[] Property S_MASK Auto
+int[] Property B_MASK Auto
+int[] Property U_MASK Auto
+int[] Property J_MASK Auto
+
+int[] Property OPCODE_MASK Auto
+int[] Property RD_MASK Auto
+int[] Property RS1_MASK Auto
+int[] Property RS2_MASK Auto
+int[] Property FUNCT3_MASK Auto
+int[] Property FUNCT7_MASK Auto
+
+int OPGROUP0 = 55 ;0110111
 ;lui
-int OPGROUP0 = 55
 
-;0010111
+int OPGROUP1 = 23 ;0010111
 ;auipc
-int OPGROUP1 = 23
 
-;1101111
+int OPGROUP2 = 111 ;1101111
 ;jal
-int OPGROUP2 = 111
 
-;1100111
+int OPGROUP3 = 103 ;1100111
 ;jalr
-int OPGROUP3 = 103
 
-;1100011
+int OPGROUP4 = 99 ;1100011
 ;beq, bne, blt, bge, bltu, bgeu
-int OPGROUP4 = 99
 
-;0000011
+int OPGROUP5 = 3 ;0000011
 ;lb, lh, lw, lbu, lhu
-int OPGROUP5 = 3
 
-;0100011
+int OPGROUP6 = 35 ;0100011
 ;sb, sh, sw
-int OPGROUP6 = 35
 
-;0010011
+int OPGROUP7 = 19 ;0010011
 ;addi, slti, sltiu, xori, ori, andi, slli, srli, srai
-int OPGROUP7 = 19
 
-;0110011
+int OPGROUP8 = 51 ;0110011
 ;add, sub, sll, slt, sltu, xor, srl, sra, or, and
-int OPGROUP8 = 51
 
-int BEQ
-int BNE
-int BLT
-int BGE
-int BLTU
-int BGEU
+int BEQ = 0 ;000
+int BNE = 1 ;001
+int BLT = 4 ;100
+int BGE = 5 ;101
+int BLTU = 6 ;110
+int BGEU = 7 ;111
 
-int LB
-int LH
-int LW
-int LBU
-int LHU
+int LB = 0 ;000
+int LH = 1 ;001
+int LW = 2 ;010
+int LBU = 4 ;100
+int LHU = 5 ;101
 
-int SB
-int SH
-int SW
+int SB = 0 ;000
+int SH = 1 ;001
+int SW = 2 ;010
 
-int ADDI
-int SLTI
-int SLTIU
-int XORI
-int ORI
-int ANDI
-int SLLI
-int SRLI_SRAI
+int ADDI = 0 ;000
+int SLTI = 2 ; 010
+int SLTIU = 3 ;011
+int XORI = 4 ;100
+int ORI = 6 ;110
+int ANDI = 7 ;111
+int SLLI = 1 ;001
+int SRLI_SRAI = 5 ;101
+int SRLI = 0 ;0000000
+int SRAI = 32 ;0100000
 
-int ADD_SUB
-int SLL
-int SLT
-int SLTU
-int XOR
-int SRL_SRA
-int OR
-int AND
+int ADD_SUB = 0 ;000
+int ADD = 0 ;0000000
+int SUB = 32 ;0100000
+int SLL = 1 ;001
+int SLT = 2 ;010
+int SLTU = 3 ;011
+int XOR = 4 ;100
+int SRL_SRA = 5 ;101
+int SRL = 0 ;0000000
+int SRA = 32 ;0100000
+int OR = 6 ;110
+int AND = 7 ;111
 
 int[] Registers
 int ProgramCounter
 int InstructionRegister
+bool[] AInstructionRegister
 
 Event OnInit()
 	Registers = new int[32]
@@ -85,6 +96,7 @@ EndEvent
 Function Cycle()
 ; fetch instruction
 	InstructionRegister = ReadWord(ProgramCounter)
+	AInstructionRegister = Binlib.IntToArray(InstructionRegister)
 	
 	Debug.Trace(InstructionRegister)
 	int f3
@@ -195,8 +207,14 @@ Function Cycle()
 	ElseIf (op == OPGROUP8)
 		f3 = funct3()
 		If (f3 == ADD_SUB)
+			f7 = funct7()
 ; instruction ADD
+			If (f7 == ADD)
+				SetRegister(rd(), rs1() + rs2())
 ; instruction SUB
+			ElseIf (f7 == SUB)
+				SetRegister(rd(), rs1() - rs2())
+			EndIf
 ; instruction SLL
 		ElseIf (f3 == SLL)
 ; instruction SLT
@@ -267,38 +285,62 @@ Function WriteWord(int address, int value)
 EndFunction
 
 ; Decoding functions
+int Function decode(int[] mask)
+	bool[] ret = new bool[32]
+	
+	int i = 0
+	While (i < mask.Length)
+		If (mask[i] >= 0)
+			ret[i] = AInstructionRegister[mask[i]]
+		EndIf
+	EndWhile
+	
+	Return Binlib.ArrayToInt(ret)
+EndFunction
+
 int Function opcode()
+; todo: test if doing it with AND and bitshifts is faster
+;	Return Binlib.BitwiseAND(InstructionRegister, 127)
+	Return decode(OPCODE_MASK)
 EndFunction
 
 int Function rd()
+;	Return Binlib.RightShift(Binlib.BitwiseAND(InstructionRegister, 3968), 7)
+	Return decode(RD_MASK)
 EndFunction
 
 int Function rs1()
+	Return decode(RS1_MASK)
 EndFunction
 
 int Function rs2()
+	Return decode(RS2_MASK)
 EndFunction
 
 int Function funct3()
+	Return decode(FUNCT3_MASK)
 EndFunction
 
 int Function funct7()
-EndFunction
-
-int Function r_immediate()
+	Return decode(FUNCT7_MASK)
 EndFunction
 
 int Function i_immediate()
+	Return decode(I_MASK)
 EndFunction
 
 int Function s_immediate()
+	Return decode(S_MASK)
 EndFunction
 
 int Function b_immediate()
+	Return decode(B_MASK)
 EndFunction
 
 int Function u_immediate()
+	Return decode(U_MASK)
 EndFunction
 
 int Function j_immediate()
+	Return decode(J_MASK)
 EndFunction
