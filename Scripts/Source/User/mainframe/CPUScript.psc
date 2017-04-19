@@ -369,3 +369,8 @@ EndFunction
 int Function j_immediate()
 	Return decode(J_MASK)
 EndFunction
+
+Event OnActivate(ObjectReference akActionRef)
+	Cycle()
+	Debug.MessageBox("Cycle complete!")
+EndEvent
