@@ -97,7 +97,7 @@ Function Cycle()
 ; fetch instruction
 	InstructionRegister = ReadWord(ProgramCounter)
 	AInstructionRegister = IntToArray(InstructionRegister)
-	
+
 ;	Debug.Trace("instruction is: " + InstructionRegister)
 ;	Debug.Trace("opcode is: " + opcode())
 	int f3
@@ -258,7 +258,7 @@ Function SetRegister(int register, int value)
 EndFunction
 
 int Function Read(int address)
-	ExpansionRackScript NextRack = ISPSelf.GetObject("NextRack") as ExpansionRackScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
 	If(NextRack)
 		Return NextRack.Read(address)
 	Else
@@ -267,7 +267,7 @@ int Function Read(int address)
 EndFunction
 
 Function Write(int address, int value)
-	ExpansionRackScript NextRack = ISPSelf.GetObject("NextRack") as ExpansionRackScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
 	If(NextRack)
 		NextRack.Write(address, value)
 	EndIf
@@ -310,16 +310,16 @@ EndFunction
 ; Decoding functions
 int Function decode(int[] mask)
 	bool[] ret = new bool[32]
-	
+
 	int i = 0
 	While (i < mask.Length)
 		If (mask[i] >= 0)
 			ret[i] = AInstructionRegister[mask[i]]
 		EndIf
-		
+
 		i += 1
 	EndWhile
-	
+
 	Return ArrayToInt(ret)
 EndFunction
 

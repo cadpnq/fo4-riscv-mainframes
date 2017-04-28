@@ -2,7 +2,7 @@ Scriptname mainframe:ExpansionRackScript extends mainframe:BaseScript
 
 int Function Read(int address)
 	If(address >= 8192)
-		ExpansionRackScript NextRack = ISPSelf.GetObject("NextRack") as ExpansionRackScript
+		mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
 		If(NextRack)
 			Return NextRack.Read(address - 8192)
 		Else
@@ -23,7 +23,7 @@ EndFunction
 
 Function Write(int address, int value)
 	If(address >= 8192)
-		ExpansionRackScript NextRack = ISPSelf.GetObject("NextRack") as ExpansionRackScript
+		mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
 		If(NextRack)
 			NextRack.Write(address - 8192, value)
 		EndIf
