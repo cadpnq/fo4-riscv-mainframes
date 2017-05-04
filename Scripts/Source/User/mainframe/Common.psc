@@ -33,7 +33,9 @@ Function DeleteConnectors(ObjectReference[] Connectors) Global
 	EndWhile
 EndFunction
 
-Function PositionConnectorsInLine(ObjectReference ParentObject, ObjectReference[] Connectors, int OffsetX, int OffsetY, int OffsetZ, int Direction) Global
+Function PositionConnectorsInLine(ObjectReference ParentObject, \
+    ObjectReference[] Connectors, int OffsetX, int OffsetY, int OffsetZ, \
+    int Direction) Global
 	int direction_up = 0
 	int direction_down = 1
 	int direction_left = 2
@@ -63,7 +65,9 @@ Function PositionConnectorsInLine(ObjectReference ParentObject, ObjectReference[
 	EndWhile
 EndFunction
 
-Function MoveRelativeTo(ObjectReference ParentObject, ObjectReference ObjectToMove, int OffsetX, int OffsetY, int OffsetZ, bool MatchAngle = True) Global
+Function MoveRelativeTo(ObjectReference ParentObject, \
+    ObjectReference ObjectToMove, int OffsetX, int OffsetY, int OffsetZ, \
+    bool MatchAngle = True) Global
 	float Xpos
 	float Ypos
 	float Zpos = OffsetZ
@@ -122,7 +126,8 @@ Function WriteOutputs(ObjectReference[] Connectors, int Value) Global
 	EndWhile
 EndFunction
 
-Function AttachConnectors(ObjectReference Me, ObjectReference[] Connectors) Global
+Function AttachConnectors(ObjectReference Me, ObjectReference[] Connectors) \
+    Global
 	int i = 0
 	While (i < Connectors.Length)
 			Connectors[i].AttachTo(Me)

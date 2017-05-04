@@ -1,6 +1,5 @@
 Scriptname mainframe:OutputPanelScript extends mainframe:PanelBaseScript
 
-
 import mainframe:Common
 
 Activator Property Output Auto

@@ -1,7 +1,8 @@
 Scriptname mainframe:CPUScript extends mainframe:BaseScript
 import Binlib
 
-; Note that I'm making a choice of simple over fast. Lots of optimizations are possible.
+; Note that I'm making a choice of simple over fast. Lots of optimizations are
+; possible.
 
 int[] Property I_MASK Auto
 int[] Property S_MASK Auto
@@ -258,7 +259,8 @@ Function SetRegister(int register, int value)
 EndFunction
 
 int Function Read(int address)
-	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as \
+		mainframe:BaseScript
 	If(NextRack)
 		Return NextRack.Read(address)
 	Else
@@ -267,7 +269,8 @@ int Function Read(int address)
 EndFunction
 
 Function Write(int address, int value)
-	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as \
+		mainframe:BaseScript
 	If(NextRack)
 		NextRack.Write(address, value)
 	EndIf

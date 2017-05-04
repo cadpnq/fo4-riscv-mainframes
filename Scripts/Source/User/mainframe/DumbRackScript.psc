@@ -1,7 +1,8 @@
 Scriptname mainframe:DumbRackScript extends mainframe:BaseScript
 
 int Function Read(int address)
-	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as \
+		mainframe:BaseScript
 	If(NextRack)
 		Return NextRack.Read(address)
 	Else
@@ -10,7 +11,8 @@ int Function Read(int address)
 EndFunction
 
 Function Write(int address, int value)
-	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as mainframe:BaseScript
+	mainframe:BaseScript NextRack = ISPSelf.GetObject("NextRack") as \
+		mainframe:BaseScript
 	If(NextRack)
 		NextRack.Write(address, value)
 	EndIf
