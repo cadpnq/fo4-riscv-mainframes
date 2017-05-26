@@ -277,7 +277,7 @@ Function Write(int address, int value)
 EndFunction
 
 int Function ReadHalfword(int address)
-	Return BitwiseOR(Read(address), LeftShift(Read(address + 1), 8))
+	Return Read(address) + LeftShift(Read(address + 1), 8)
 EndFunction
 
 Function WriteHalfword(int address, int value)
@@ -286,7 +286,7 @@ Function WriteHalfword(int address, int value)
 EndFunction
 
 int Function ReadWord(int address)
-	Return BitwiseOR(ReadHalfword(address), LeftShift(ReadHalfword(address + 2), 16))
+	Return ReadHalfword(address) + LeftShift(ReadHalfword(address + 2), 16)
 EndFunction
 
 Function WriteWord(int address, int value)
