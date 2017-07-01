@@ -281,8 +281,8 @@ int Function ReadHalfword(int address)
 EndFunction
 
 Function WriteHalfword(int address, int value)
-	Write(address, BitwiseAND(value, 255))
-	Write(address + 1, BitwiseAND(RightShift(value, 255), 8))
+	Write(address, Math.LogicalAND(value, 255))
+	Write(address + 1, Math.LogicalAND(RightShift(value, 255), 8))
 EndFunction
 
 int Function ReadWord(int address)
@@ -290,13 +290,13 @@ int Function ReadWord(int address)
 EndFunction
 
 Function WriteWord(int address, int value)
-	WriteHalfword(address, BitwiseAND(value, 65535))
-	WriteHalfword(address + 2, BitwiseAND(RightShift(value, 16), 65535))
+	WriteHalfword(address, Math.LogicalAND(value, 65535))
+	WriteHalfword(address + 2, Math.LogicalAND(RightShift(value, 16), 65535))
 EndFunction
 
 int Function ExtendByte(int value)
 	If (GetBit(value, 7))
-		Return BitwiseOR(value, -256)
+		Return Math.LogicalOR(value, -256)
 	Else
 		Return value
 	EndIf
@@ -304,7 +304,7 @@ EndFunction
 
 int Function ExtendHalfword(int value)
 	If (GetBit(value, 15))
-		Return BitwiseOR(value, -65536)
+		Return Math.LogicalOR(value, -65536)
 	Else
 		Return Value
 	EndIf
@@ -329,51 +329,78 @@ EndFunction
 int Function opcode()
 ; todo: test if doing it with AND and bitshifts is faster
 ;	Return BitwiseAND(InstructionRegister, 127)
-	Return decode(OPCODE_MASK)
+;	Return decode(OPCODE_MASK)
+  Return RISCV.opcode(InstructionRegister)
 EndFunction
 
 int Function rd()
 ;	Return decodeRightShift(BitwiseAND(InstructionRegister, 3968), 7)
-	Return decode(RD_MASK)
+;	Return decode(RD_MASK)
+  Return RISCV.rd(InstructionRegister)
 EndFunction
 
 int Function rs1()
-	Return decode(RS1_MASK)
+;	Return decode(RS1_MASK)
+  Return RISCV.rs1(InstructionRegister)
 EndFunction
 
 int Function rs2()
-	Return decode(RS2_MASK)
+;	Return decode(RS2_MASK)
+  Return RISCV.rs2(InstructionRegister)
 EndFunction
 
 int Function funct3()
-	Return decode(FUNCT3_MASK)
+;	Return decode(FUNCT3_MASK)
+  Return RISCV.func3(InstructionRegister)
 EndFunction
 
 int Function funct7()
-	Return decode(FUNCT7_MASK)
+;	Return decode(FUNCT7_MASK)
+  Return RISCV.func7(InstructionRegister)
 EndFunction
 
 int Function i_immediate()
 	Return decode(I_MASK)
+;  Return RISCV.i_immediate(InstructionRegister)
 EndFunction
 
 int Function s_immediate()
 	Return decode(S_MASK)
+;  Return RISCV.s_immediate(InstructionRegister)
 EndFunction
 
 int Function b_immediate()
 	Return decode(B_MASK)
+;  Return RISCV.b_immediate(InstructionRegister)
 EndFunction
 
 int Function u_immediate()
 	Return decode(U_MASK)
+;  Return RISCV.u_immediate(InstructionRegister)
 EndFunction
 
 int Function j_immediate()
 	Return decode(J_MASK)
+;  Return RISCV.j_immediate(InstructionRegister)
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)
-	Cycle()
+
+  ; int IR = -1
+  ; Debug.Trace("Opcode: " + RISCV.opcode(IR))
+  ; Debug.Trace("RD: " + RISCV.rd(IR))
+  ; Debug.Trace("RS1: " + RISCV.rs1(IR))
+  ; Debug.Trace("RS2: " + RISCV.rs2(IR))
+  ; Debug.Trace("func3: " + RISCV.func3(IR))
+  ; Debug.Trace("func7 :" + RISCV.func7(IR))
+  ; Debug.MessageBox(RISCV.func3(-1))
+
+
+
+  int i = 0
+  While (i < 1)
+	   Cycle()
+     i += 1
+   EndWhile
 	Debug.MessageBox("Cycle complete!")
 EndEvent
