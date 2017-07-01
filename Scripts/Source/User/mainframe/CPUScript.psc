@@ -97,7 +97,7 @@ EndEvent
 Function Cycle()
 ; fetch instruction
 	InstructionRegister = ReadWord(ProgramCounter)
-	AInstructionRegister = IntToArray(InstructionRegister)
+;	AInstructionRegister = IntToArray(InstructionRegister)
 
 ;	Debug.Trace("instruction is: " + InstructionRegister)
 ;	Debug.Trace("opcode is: " + opcode())
@@ -277,21 +277,21 @@ Function Write(int address, int value)
 EndFunction
 
 int Function ReadHalfword(int address)
-	Return Read(address) + LeftShift(Read(address + 1), 8)
+	Return Read(address) + Math.LeftShift(Read(address + 1), 8)
 EndFunction
 
 Function WriteHalfword(int address, int value)
 	Write(address, Math.LogicalAND(value, 255))
-	Write(address + 1, Math.LogicalAND(RightShift(value, 255), 8))
+	Write(address + 1, Math.LogicalAND(Math.RightShift(value, 255), 8))
 EndFunction
 
 int Function ReadWord(int address)
-	Return ReadHalfword(address) + LeftShift(ReadHalfword(address + 2), 16)
+	Return ReadHalfword(address) + Math.LeftShift(ReadHalfword(address + 2), 16)
 EndFunction
 
 Function WriteWord(int address, int value)
 	WriteHalfword(address, Math.LogicalAND(value, 65535))
-	WriteHalfword(address + 2, Math.LogicalAND(RightShift(value, 16), 65535))
+	WriteHalfword(address + 2, Math.LogicalAND(Math.RightShift(value, 16), 65535))
 EndFunction
 
 int Function ExtendByte(int value)
@@ -360,28 +360,29 @@ int Function funct7()
 EndFunction
 
 int Function i_immediate()
-	Return decode(I_MASK)
-;  Return RISCV.i_immediate(InstructionRegister)
+;  Debug.Trace(RISCV.i_immediate(InstructionRegister))
+;	Return decode(I_MASK)
+  Return RISCV.i_immediate(InstructionRegister)
 EndFunction
 
 int Function s_immediate()
-	Return decode(S_MASK)
-;  Return RISCV.s_immediate(InstructionRegister)
+;	Return decode(S_MASK)
+  Return RISCV.s_immediate(InstructionRegister)
 EndFunction
 
 int Function b_immediate()
-	Return decode(B_MASK)
-;  Return RISCV.b_immediate(InstructionRegister)
+;	Return decode(B_MASK)
+  Return RISCV.b_immediate(InstructionRegister)
 EndFunction
 
 int Function u_immediate()
-	Return decode(U_MASK)
-;  Return RISCV.u_immediate(InstructionRegister)
+;	Return decode(U_MASK)
+  Return RISCV.u_immediate(InstructionRegister)
 EndFunction
 
 int Function j_immediate()
-	Return decode(J_MASK)
-;  Return RISCV.j_immediate(InstructionRegister)
+;	Return decode(J_MASK)
+  Return RISCV.j_immediate(InstructionRegister)
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)
@@ -398,9 +399,9 @@ Event OnActivate(ObjectReference akActionRef)
 
 
   int i = 0
-  While (i < 1)
+  While (i < 10)
 	   Cycle()
      i += 1
    EndWhile
-	Debug.MessageBox("Cycle complete!")
+	Debug.MessageBox("Cycles complete!")
 EndEvent

@@ -18,11 +18,11 @@ UInt32 decode(UInt32 instruction, int mask[])
 {
 	UInt32 value = 0;
 
-	for (int i = 0; i <= 32; i++) {
+	for (int i = 0; i < 32; i++) {
 		if (mask[i] == -1) 
 			continue;
 		if ((instruction >> mask[i]) & 1)
-			value |= 1 << mask[i];
+			value |= 1 << i;
 	}
 
 	return value;
